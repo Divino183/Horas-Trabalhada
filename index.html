@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt_BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <title>Horas Trabalhadas</title>
+</head>
+<body>
+  <div class="container">
+    <h1>Registro de Horário de Trabalho</h1>
+    <form id="timeForm">
+        <div class="form-group">
+            <label for="date">Data:</label>
+            <input type="date" id="date" required>
+        </div>
+        <div class="form-group">
+            <label for="entryTime">Hora de Entrada:</label>
+            <input type="time" id="entryTime" required>
+        </div>
+        <div class="form-group">
+            <label for="exitTime">Hora de Saída:</label>
+            <input type="time" id="exitTime" required>
+        </div>
+        <button type="submit">Adicionar Registro</button>
+        <button type="button" id="generatePdfButton">Gerar PDF</button>
+        <button type="button" id="saveButton">Salvar Registros</button>
+        <button type="button" id="deleteButton">Apagar Registros</button>
+    </form>
+    <table id="timeTable">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Hora de Entrada</th>
+                <th>Hora de Saída</th>
+                <th>Total de Horas</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aqui se agregarão as filas dinamicamente -->
+        </tbody>
+    </table>
+    <div id="totalHoursMonth">Total de Horas do Mês: 0:00</div>
+    <div id="notification" class="notification"></div>
+</div>
+
+<!-- Modal de confirmação para borrar registros -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>Tem certeza que deseja apagar todos os registros?</p>
+        <button id="confirmDelete">Sim, apagar</button>
+        <button id="cancelDelete">Cancelar</button>
+    </div>
+</div>
+
+<!-- Modal para inserir nome antes de gerar PDF -->
+<div id="pdfModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>Digite seu nome para incluir no PDF:</p>
+        <input type="text" id="userName" placeholder="Seu nome">
+        <button id="confirmGeneratePdf">Gerar PDF</button>
+        <button id="cancelGeneratePdf">Cancelar</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
