@@ -117,7 +117,9 @@ class TimeTracker {
       this.entries.map(e => new Date(e.start).toLocaleDateString('pt-BR'))
     );
     const daysWorked = uniqueDays.size;
-    const avgHoursPerDay = total / daysWorked / 3_600_000; // converter ms para horas
+    const avgMillisecondsPerDay = total / daysWorked;
+    const avgHours = Math.floor(avgMillisecondsPerDay / 3_600_000);
+    const avgMinutes = Math.floor((avgMillisecondsPerDay % 3_600_000) / 60_000);
     
     this.entriesList.innerHTML = `
         <table class="entries-table">
@@ -137,12 +139,12 @@ class TimeTracker {
                     </tr>`).join('')}
             </tbody>
             <tfoot>
-                <tr><td colspan="3"><b>Total Geral</b></td><td>${this.formatDur(total)}</td><td></td></tr>
+                <tr><td colspan="3"><b>Total de Horas do Mês</b></td><td>${this.formatDur(total)}</td><td></td></tr>
                 <tr class="stats-row">
                     <td colspan="5">
                         <div class="work-stats">
-                            <span><b>Dias trabalhados:</b> ${daysWorked}</span>
-                            <span><b>Média por dia:</b> ${avgHoursPerDay.toFixed(2)}h</span>
+                            <span><b>Dias Trabalhados:</b> ${daysWorked}dias</span>
+                            <span><b>Média Por Dia:</b> ${avgHours}h ${avgMinutes.toString().padStart(2, '0')}min</span>
                         </div>
                     </td>
                 </tr>
@@ -187,15 +189,18 @@ class TimeTracker {
     
     // Usar autoTable para criar a tabela
     pdf.autoTable({
-      head: [['Data', 'Hora de Entrada', 'Hora de Saída', 'Total de Horas']],
+      head: [
+        ['Data', 'Hora de Entrada', 'Hora de Saída', 'Total de Horas']
+      ],
       body: tableData,
-      startY: 20,
+      startY: 10,
       theme: 'grid',
       styles: {
         fontSize: 10,
+        fontStyle: 'bold',
         cellPadding: 3,
         halign: 'center',
-        minCellHeight: 8
+        minCellHeight: 5
       },
       headStyles: {
         fillColor: [200, 200, 200],
@@ -211,12 +216,12 @@ class TimeTracker {
     });
     
     // Adicionar rodapé com nome e total
-    const finalY = pdf.lastAutoTable.finalY + 10;
+    const finalY = pdf.lastAutoTable.finalY + 3;
     
     pdf.setFontSize(12);
     pdf.setFont(undefined, 'bold');
-    pdf.text(name, 14, finalY + 10);
-    pdf.text(`Total de Horas do Mês: ${this.formatDur(total)}`, 105, finalY + 10);
+    pdf.text(name, 14, finalY + 5);
+    pdf.text(`Total de Horas do Mês: ${this.formatDur(total)}`, 133, finalY + 5);
     
     pdf.save(`horas-${name}.pdf`);
     this.closePdfModal();
