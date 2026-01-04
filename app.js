@@ -4,37 +4,13 @@ class TimeTracker {
 
         // Array com frases do "VOCÊ SABIA?" - ADICIONE MAIS FRASES AQUI!
         this.voceSabiaFrases = [
-            {
+           {
                 texto: "O pagamento das férias deve ser feito até dois dias antes do início do período de descanso, garantindo que o trabalhador receba antes de sair de férias:",
                 artigo: "Artigo 145 da CLT."
             },
             {
-                texto: "Todo trabalhador tem direito a um intervalo mínimo de 1 hora para refeição e descanso em jornadas superiores a 6 horas diárias:",
-                artigo: "Artigo 71 da CLT."
-            },
-            {
-                texto: "A jornada de trabalho não pode exceder 8 horas diárias e 44 horas semanais, salvo acordo de compensação de horários:",
-                artigo: "Artigo 58 da CLT."
-            },
-            {
-                texto: "O trabalhador tem direito a receber adicional de no mínimo 50% sobre a hora normal quando trabalha em horário extraordinário:",
-                artigo: "Artigo 59 da CLT."
-            },
-            {
-                texto: "Após cada período de 12 meses de trabalho, o empregado tem direito a férias de 30 dias corridos sem prejuízo da remuneração:",
-                artigo: "Artigo 129 da CLT."
-            },
-            {
-                texto: "O descanso semanal remunerado é de 24 horas consecutivas, preferencialmente aos domingos, além dos feriados:",
-                artigo: "Artigo 67 da CLT."
-            },
-            {
-                texto: "A falta injustificada ao serviço pode acarretar desconto no salário e na remuneração do repouso semanal correspondente:",
-                artigo: "Artigo 6º da Lei 605/49."
-            },
-            {
-                texto: "O trabalho noturno (entre 22h e 5h) deve ter adicional de no mínimo 20% sobre a hora diurna, além de ter hora reduzida:",
-                artigo: "Artigo 73 da CLT."
+                texto: "Se você trabalhar em um feriado e não houver folga compensatória, a empresa é obrigada a pagar esse dia em dobro, conforme determina a legislação trabalhista:",
+                artigo: "Artigo 9º da Lei nº 605/1949 e Súmula 146 do TST"
             }
         ];
 
