@@ -2,9 +2,33 @@ class TimeTracker {
     constructor() {
         this.entries = JSON.parse(localStorage.getItem('timeEntries')) || [];
 
+        // Array com feriados nacionais brasileiros
+        // Formato: 'DD/MM' para feriados fixos
+        this.feriadosFixos = [
+            '01/01', // Confraternização Universal
+            '21/04', // Tiradentes
+            '01/05', // Dia do Trabalho
+            '07/09', // Independência do Brasil
+            '12/10', // Nossa Senhora Aparecida
+            '02/11', // Finados
+            '15/11', // Proclamação da República
+            '20/11', // Consciência Negra
+            '25/12'  // Natal
+        ];
+
+        // Feriados móveis de 2025-2027 (Carnaval, Sexta-feira Santa, Corpus Christi)
+        this.feriadosMoveis = [
+            // 2026
+            '03/04/2026', // Sexta-feira Santa 2026
+            '04/06/2026', // Corpus Christi 2026
+            // 2027
+            '26/03/2027', // Sexta-feira Santa 2027
+            '27/05/2027'  // Corpus Christi 2027
+        ];
+
         // Array com frases do "VOCÊ SABIA?" - ADICIONE MAIS FRASES AQUI!
         this.voceSabiaFrases = [
-           {
+            {
                 texto: "O pagamento das férias deve ser feito até dois dias antes do início do período de descanso, garantindo que o trabalhador receba antes de sair de férias:",
                 artigo: "Artigo 145 da CLT."
             },
@@ -40,6 +64,28 @@ class TimeTracker {
         setInterval(() => this.updateTime(), 1000);
 
         this.setCurrentDateTime();
+    }
+
+    // Função para verificar se uma data é feriado
+    isFeriado(date) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        const dayMonth = `${day}/${month}`;
+        const fullDate = `${day}/${month}/${year}`;
+
+        // Verifica feriados fixos
+        if (this.feriadosFixos.includes(dayMonth)) {
+            return true;
+        }
+
+        // Verifica feriados móveis
+        if (this.feriadosMoveis.includes(fullDate)) {
+            return true;
+        }
+
+        return false;
     }
 
     // Função para selecionar uma frase aleatória do "VOCÊ SABIA?"
@@ -154,14 +200,20 @@ class TimeTracker {
                 </tr>
             </thead>
             <tbody>
-                ${this.entries.map(e => `
-                    <tr>
-                        <td>${new Date(e.start).toLocaleDateString('pt-BR')}</td>
+                ${this.entries.map(e => {
+            const entryDate = new Date(e.start);
+            const isFeriado = this.isFeriado(entryDate);
+            const rowClass = isFeriado ? 'feriado-row' : '';
+
+            return `
+                    <tr class="${rowClass}">
+                        <td>${entryDate.toLocaleDateString('pt-BR')}</td>
                         <td>${this.format(new Date(e.start))}</td>
                         <td>${this.format(new Date(e.end))}</td>
                         <td>${this.formatDur(e.duration)}</td>
                         <td><button class="delete-btn" onclick="tracker.deleteEntry(${e.id})">🗑️</button></td>
-                    </tr>`).join('')}
+                    </tr>`;
+        }).join('')}
             </tbody>
             <tfoot>
                 <tr><td colspan="3"><b>Total de Horas do Mês</b></td><td>${this.formatDur(total)}</td><td></td></tr>
@@ -220,7 +272,7 @@ class TimeTracker {
         }
 
         // Título
-        pdf.setFontSize(12);
+        pdf.setFontSize(16);
         pdf.setFont(undefined, 'bold');
         const title = `FOLHA DE PONTOS DE ${currentMonth} DE ${currentYear}`;
         const titleWidth = pdf.getTextWidth(title);
@@ -228,12 +280,18 @@ class TimeTracker {
         pdf.text(title, titleX, 15);
 
         // Preparar dados para a tabela
-        const tableData = this.entries.map(e => [
-            new Date(e.start).toLocaleDateString('pt-BR'),
-            this.format(new Date(e.start)),
-            this.format(new Date(e.end)),
-            this.formatDur(e.duration)
-        ]);
+        const tableData = this.entries.map(e => {
+            const entryDate = new Date(e.start);
+            return {
+                data: [
+                    entryDate.toLocaleDateString('pt-BR'),
+                    this.format(new Date(e.start)),
+                    this.format(new Date(e.end)),
+                    this.formatDur(e.duration)
+                ],
+                isFeriado: this.isFeriado(entryDate)
+            };
+        });
 
         // Calcular total
         const total = this.entries.reduce((a, b) => a + b.duration, 0);
@@ -243,7 +301,7 @@ class TimeTracker {
             head: [
                 ['Data', 'Hora de Entrada', 'Hora de Saída', 'Total de Horas']
             ],
-            body: tableData,
+            body: tableData.map(entry => entry.data),
             startY: 25,
             theme: 'grid',
             styles: {
@@ -272,6 +330,16 @@ class TimeTracker {
                 1: { cellWidth: 50 },
                 2: { cellWidth: 50 },
                 3: { cellWidth: 46 }
+            },
+            didParseCell: function (data) {
+                // Colorir linhas de feriados de azul
+                if (data.section === 'body') {
+                    const rowIndex = data.row.index;
+                    if (tableData[rowIndex] && tableData[rowIndex].isFeriado) {
+                        data.cell.styles.textColor = [0, 0, 255]; // Azul
+                        data.cell.styles.fontStyle = 'bold';
+                    }
+                }
             }
         });
 
@@ -307,7 +375,7 @@ class TimeTracker {
         pdf.text('VOCÊ SABIA?', 18, boxY + 6);
 
         // Texto informativo (aleatório)
-        pdf.setFontSize(10);
+        pdf.setFontSize(8);
         pdf.setFont(undefined, 'normal');
         const splitText = pdf.splitTextToSize(voceSabiaInfo.texto, boxWidth - 8);
         pdf.text(splitText, 18, boxY + 11);
@@ -315,7 +383,7 @@ class TimeTracker {
         // Artigo da CLT
         pdf.setFont(undefined, 'bold');
         const artigoWidth = pdf.getTextWidth(voceSabiaInfo.artigo);
-        const artigoX = pdf.internal.pageSize.width - 14 - artigoWidth;
+        const artigoX = pdf.internal.pageSize.width - 19 - artigoWidth;
         pdf.text(voceSabiaInfo.artigo, artigoX, boxY + 17);
 
         pdf.save(`Folha_Pontos_${currentMonth}_${currentYear}_${name.replace(/\s+/g, '_')}.pdf`);
