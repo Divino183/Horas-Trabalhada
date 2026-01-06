@@ -491,6 +491,20 @@ h2 {
   background: #3498db;
 }
 
+/* Estilo para linhas de feriados */
+.feriado-row {
+  color: #ff0000 !important;
+  font-weight: bold;
+}
+
+.feriado-row td {
+  color: rgb(255, 0, 0) !important;
+}
+
+.feriado-row:hover {
+  background: #e6f2ff !important;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0;
