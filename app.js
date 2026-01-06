@@ -336,7 +336,7 @@ class TimeTracker {
                 if (data.section === 'body') {
                     const rowIndex = data.row.index;
                     if (tableData[rowIndex] && tableData[rowIndex].isFeriado) {
-                        data.cell.styles.textColor = [0, 0, 255]; // Azul
+                        data.cell.styles.textColor = [255, 0, 0]; // Vermelho
                         data.cell.styles.fontStyle = 'bold';
                     }
                 }
